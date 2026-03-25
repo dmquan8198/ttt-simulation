@@ -75,7 +75,7 @@ body{display:flex;flex-direction:column}
 .fc button{padding:2px 8px;border:1px solid var(--border2);background:var(--surface);font-size:9px;font-weight:500;cursor:pointer;border-radius:3px}.fc button:hover{border-color:var(--tvam);color:var(--tvam)}.fc button.act{background:var(--tvam);color:#fff;border-color:var(--tvam)}.fc button:disabled{opacity:.3;cursor:not-allowed}
 .fsi{font-family:var(--mono);font-size:9px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fsi b{color:var(--text);font-weight:600}
 .seq-wrap{flex:1;overflow-x:hidden;overflow-y:auto}.seq-wrap::-webkit-scrollbar{width:3px}.seq-wrap::-webkit-scrollbar-thumb{background:var(--border2)}
-.sys-head{display:flex;position:sticky;top:0;z-index:10;position:relative}.sys-band{display:flex;flex-direction:column}.sys-title{text-align:center;padding:3px 0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fff}.sys-title.bg-m{background:var(--momo)}.sys-title.bg-t{background:var(--tvam)}.sys-title.bg-v{background:var(--vcb)}
+.sys-head{display:flex;position:relative;z-index:10}.sys-band{display:flex;flex-direction:column}.sys-title{text-align:center;padding:3px 0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fff}.sys-title.bg-m{background:var(--momo)}.sys-title.bg-t{background:var(--tvam)}.sys-title.bg-v{background:var(--vcb)}
 .sys-cols{display:flex}.sys-col{flex:1;text-align:center;padding:3px 2px;font-size:7px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-right:1px solid var(--border);background:var(--surface2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sys-col:last-child{border-right:none}
 .seq-body{position:relative;padding-bottom:40px;min-height:60px}
 .col-line{position:absolute;top:0;bottom:0;border-left:1px dashed rgba(0,0,0,.08);z-index:0;pointer-events:none}
@@ -142,10 +142,13 @@ body{display:flex;flex-direction:column}
 <div class="tpane on" id="ttp0">
   <div class="ab"><div class="al t">Per-user</div><div id="tug"></div></div>
   <div style="font-size:7px;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:5px">Jobs<span style="flex:1;height:1px;background:var(--border)"></span></div>
-  <button class="jb" id="bjr" onclick="jRut()" disabled><div><div class="jn">Job Rút</div><div class="js">VCB_SellCD → VCB_Withdraw</div></div><span class="jt idle" id="sr">idle</span></button>
-  <button class="jb" id="bjm" onclick="jMoMo()" disabled><div><div class="jn">Job MoMo</div><div class="js">MoMo_Refill → VCB_DepositTổng</div></div><span class="jt idle" id="sm">idle</span></button>
-  <button class="jb" id="bjn" onclick="jNap()" disabled><div><div class="jn">Job Nạp</div><div class="js">VCB_DepositUser → VCB_BuyCD</div></div><span class="jt idle" id="sn">idle</span></button>
+  <button class="jb" id="bjr" onclick="jRut()" disabled><div><div class="jn">Job Rút</div><div class="js">TVAM_SellCD · VCB_SellCD · TVAM_Withdraw</div></div><span class="jt idle" id="sr">idle</span></button>
+  <button class="jb" id="bjf" onclick="jRefill()" disabled><div><div class="jn">Job Hoàn ứng <span style="font-size:9px;color:var(--muted);font-weight:400">(optional)</span></div><div class="js">Refill Finsight Pool</div></div><span class="jt idle" id="sf">idle</span></button>
+  <button class="jb" id="bjm" onclick="jNap()" disabled><div><div class="jn">Job Nạp</div><div class="js">MoMo_Transfer · VCB_DepositTổng · VCB_DepositUser · TVAM_BuyCD · VCB_BuyCD</div></div><span class="jt idle" id="sm">idle</span></button>
   <button class="jb" id="bjc" onclick="closeSes()" disabled><div><div class="jn">Đóng phiên</div></div><span class="jt idle" id="sc">idle</span></button>
+  <div style="font-size:7px;color:var(--dim);text-transform:uppercase;display:flex;align-items:center;gap:5px;margin-top:6px">Swap<span style="flex:1;height:1px;background:var(--border)"></span></div>
+  <div id="swapAlerts"></div>
+  <button class="jb" id="bjs" onclick="jSwap()" disabled style="border-color:var(--vcb);color:var(--vcb)"><div><div class="jn" style="color:var(--vcb)">Job Swap <span id="swapLbl" style="font-size:8px;font-weight:400;color:var(--muted)"></span></div><div class="js">Bán lô cũ → Mua lô mới</div></div><span class="jt idle" id="ss">idle</span></button>
   <button class="jb" id="brl" onclick="rollback()" disabled style="border-color:var(--neg);color:var(--neg);margin-top:4px"><div><div class="jn">↩ Rollback</div><div class="js" id="rlbl">Hoàn tác job vừa chạy</div></div><span class="jt" style="color:var(--neg)">–</span></button>
 </div>
 <div class="tpane" id="ttp1">
@@ -194,7 +197,7 @@ body{display:flex;flex-direction:column}
 <div class="resizer" id="resizer"></div>
 <!-- FLOW -->
 <div class="flow"><div class="fh"><h3>Luồng tiền</h3><div class="fsi" id="si">Nạp/rút để xem</div><div class="fc"><button id="bp" onclick="fPrv()" disabled>◀</button><button id="bpl" onclick="fPly()" disabled>▶ Play</button><button id="bn" onclick="fNxt()" disabled>▶</button><button id="br" onclick="fRpl()" disabled>↻</button></div></div>
-<div class="seq-wrap" id="sw"><div class="sys-head" id="sh"></div><div class="seq-body" id="sb"></div></div></div>
+<div class="seq-wrap" id="sw"><div style="position:sticky;top:0;z-index:10;flex-shrink:0"><div class="sys-head" id="sh"></div></div><div class="seq-body" id="sb"></div></div></div>
 </div>
 
 <script>
@@ -208,7 +211,7 @@ let S,aU=0,lsgd=[],loPri=[],cmpLog=[];
 function mkU(){return{vi:1e8,cd:0,cash:0,int:0,sN:0,sR:0,laiLog:[],capDiff:0,n31:0,simpleN31:0,simpleCapDiff:false,lots:[]};}
 function eL(u,i){if(!u.lots[i])u.lots[i]={qty:0,capDiff:0};}
 function mkC(f,r,t,q){return{face:f,rate:r,tenor:t,qty:q,p0:0,pN:0,pX:0,s:0,e:t};}
-let cL=[mkC(1e10,6,365,1),mkC(1e5,7,365,1e4),mkC(1e6,7.24,730,123),mkC(1e7,6.54,365,1232)];
+let cL=[mkC(1e10,6,365,1),mkC(1e5,7,365,1e4),mkC(1e5,7,15,500),mkC(1e5,7,5,300),mkC(1e6,7.24,730,123),mkC(1e7,6.54,365,1232)];
 function pR(p){return Math.round(p*100)/100;}
 function cT0(f,r,t){return pR(f*(1+r/100*t/365)/Math.pow(1+LS/365,t));}
 function iCL(){cL.forEach(l=>{l.p0=cT0(l.face,l.rate,l.tenor);l.pN=l.p0;l.pX=pR(l.p0+l.p0*LS/365);l.e=l.s+l.tenor;});}
@@ -271,6 +274,8 @@ function actionsToText(){
     if(a==='NẠP') return 'NAP '+p.user+' '+p.amount;
     if(a==='RÚT') return 'RUT '+p.user+' '+p.amount;
     if(a==='JOB_RÚT') return 'JOB_RUT';
+    if(a==='JOB_HOÀN_ỨNG') return 'JOB_REFILL';
+    if(a==='JOB_VCB') return 'JOB_VCB';
     if(a==='JOB_MOMO') return 'JOB_MOMO';
     if(a==='JOB_NẠP') return 'JOB_NAP';
     if(a==='ĐÓNG_PHIÊN') return 'DONG_PHIEN';
@@ -343,7 +348,9 @@ function runReplay(){
         const ui=userMap[parts[1]];const amt=parseInt(parts[2]);
         aU=ui;document.getElementById('irut').value=String(amt);doRut();ok++;
       }else if(cmd==='JOB_RUT'){jRut();ok++;}
+      else if(cmd==='JOB_REFILL'){jRefill();ok++;}
       else if(cmd==='JOB_MOMO'){jMoMo();ok++;}
+      else if(cmd==='JOB_VCB'){jVCB();ok++;}
       else if(cmd==='JOB_NAP'){jNap();ok++;}
       else if(cmd==='DONG_PHIEN'){closeSes();ok++;}
       else if(cmd==='QUA_NGAY'){advDay();ok++;}
@@ -375,7 +382,7 @@ function rollback(){if(!snap){log('Không có snapshot','err');return;}Object.as
 
 // LSGD
 function addLsgd(uIdx,type,qty,price,paid,loIdx){lsgd.unshift({b:String(S.bId).padStart(4,'0'),u:uIdx,type,qty,price,paid,lo:loIdx!=null?loIdx:-1});if(lsgd.length>80)lsgd.pop();renderLsgd();}
-function renderLsgd(){const tb=document.getElementById('lsgdB');if(!tb)return;const labels='ABCDEFGH';if(!lsgd.length){tb.innerHTML='<tr><td colspan="7" style="color:var(--muted)">Chưa có</td></tr>';return;}tb.innerHTML=lsgd.slice(0,40).map(r=>{const n=UN[r.u];const tl=r.type==='buy'?'▲ Mua':r.type==='sell'?'▼ Bán':r.type==='deposit'?'▶ Nạp':'◀ Rút';const loTag=r.lo>=0?'Lô '+labels[r.lo]:'–';return`<tr><td>${r.b}</td><td style="color:${UCOL[r.u]};font-weight:600">${n}</td><td>${tl}</td><td>${loTag}</td><td>${r.qty>0?fCD(r.qty):'–'}</td><td>${r.price>0?fP(r.price):'–'}</td><td>${fN(r.paid)}</td></tr>`;}).join('');}
+function renderLsgd(){const tb=document.getElementById('lsgdB');if(!tb)return;const labels='ABCDEFGH';if(!lsgd.length){tb.innerHTML='<tr><td colspan="7" style="color:var(--muted)">Chưa có</td></tr>';return;}tb.innerHTML=lsgd.slice(0,40).map(r=>{const n=UN[r.u];const tl=r.type==='buy'?'▲ Mua':r.type==='sell'?'▼ Bán':r.type==='deposit'?'▶ Nạp':r.type==='swap'?'⇄ Swap':'◀ Rút';const loTag=r.lo>=0?'Lô '+labels[r.lo]:'–';return`<tr><td>${r.b}</td><td style="color:${UCOL[r.u]};font-weight:600">${n}</td><td>${tl}</td><td>${loTag}</td><td>${r.qty>0?fCD(r.qty):'–'}</td><td>${r.price>0?fP(r.price):'–'}</td><td>${fN(r.paid)}</td></tr>`;}).join('');}
 
 // CD lot management
 function renderCDLo(){const el=document.getElementById('cdLoList');const labels='ABCDEFGH';el.innerHTML=cL.map((lo,i)=>{const inP=loPri.indexOf(i);const rank=inP>=0?inP+1:null;return`<div class="lo-card"><div class="lo-h">Lô ${labels[i]}${rank?' <span style="color:var(--pos)">#'+rank+'</span>':''} <button onclick="togPri(${i})" style="float:right;font-size:7px;padding:1px 4px;border:1px solid var(--tvam);border-radius:2px;background:${rank?'rgba(180,83,9,.12)':'var(--surface2)'};color:var(--tvam);cursor:pointer">${rank?'Bỏ':'Chọn'}</button></div><div class="ur"><span>MG ${fN(lo.face)}</span><span>LS ${lo.rate}%</span><span>${lo.tenor}ng</span></div><div class="ur"><span>Qty: ${fCD(lo.qty)}</span><span>Giá: ${fP(lo.pN||lo.p0)}</span></div></div>`;}).join('');document.getElementById('loPriDisp').textContent=loPri.length?'Thứ tự: '+loPri.map(i=>'Lô '+labels[i]).join(' → '):'Auto (qty giảm dần)';}
@@ -444,11 +451,11 @@ function renderPriceTable(){
 }
 
 function resetAll(){
-  cL=[mkC(1e10,6,365,1),mkC(1e5,7,365,1e4),mkC(1e6,7.24,730,123),mkC(1e7,6.54,365,1232)];iCL();
-  S={day:0,bId:1,price:gAP(),phase:'IDLE',users:[mkU(),mkU(),mkU()],thuHo:0,pool:PX,sN:0,sU:0,sW:0,vUCD:[0,0,0],vUC:[0,0,0],vFCD:cL.reduce((s,l)=>s+l.qty,0),vFC:0,vT:0,vMT:0,jobs:{r:0,m:0,n:0},pendingLS:null};
+  cL=[mkC(1e10,6,365,1),mkC(1e5,7,365,1e4),mkC(1e5,7,15,500),mkC(1e5,7,5,300),mkC(1e6,7.24,730,123),mkC(1e7,6.54,365,1232)];iCL();
+  S={day:0,bId:1,price:gAP(),phase:'IDLE',users:[mkU(),mkU(),mkU()],thuHo:0,pool:PX,sN:0,sU:0,sW:0,vUCD:[0,0,0],vUC:[0,0,0],vFCD:cL.reduce((s,l)=>s+l.qty,0),vFC:0,vT:0,vMT:0,jobs:{r:0,f:0,m:0,v:0,n:0},pendingLS:null,sesOpen:false};
   aU=0;lsgd=[];loPri=[];cmpLog=[];snap=null;fSt=[];fI=-1;fPl=false;clearInterval(fTm);clearHL();aLog=[];aLogAdd('RESET',{});
   document.getElementById('brl').disabled=true;document.getElementById('rlbl').textContent='Hoàn tác job vừa chạy';
-  bldH();clrB();uFB();renderCDLo();renderVCDLo();renderLsgd();renderLaiLog();renderPriceTable();
+  bldH();clrB();uFB();renderCDLo();renderVCDLo();renderLsgd();renderLaiLog();renderPriceTable();checkSwapAlerts();
   const ah=document.getElementById('advHint');if(ah)ah.style.display='none';
   log('Reset.');render();
   const lsInp=document.getElementById('ls-inp');if(lsInp)lsInp.value=Math.round(LS*10000)/100;
@@ -497,15 +504,19 @@ function render(){
   const tc=s.users.reduce((a,u)=>a+u.cd,0),vc=s.vUCD.reduce((a,v)=>a+v,0);
   sV('ckc',Math.abs(tc-vc)<5e-7?'✓':'✗');sV('ckk',Math.abs(s.users.reduce((a,u)=>a+u.cash,0)-s.vUC.reduce((a,v)=>a+v,0))<1?'✓':'✗');
   const hR=s.users.some(u=>u.sR>u.sN),hN=s.users.some(u=>u.sN>u.sR),hA=s.users.some(u=>u.sN>0||u.sR>0),j=s.jobs;
-  sJ('bjr','sr',hR&&!j.r,j.r);const rD=!hR||j.r;sJ('bjm','sm',hA&&rD&&!j.m,j.m);sJ('bjn','sn',hN&&j.m&&!j.n,j.n);sJ('bjc','sc',hA&&rD&&j.m&&(!hN||j.n),0);
+  const rDone=!hR||j.r;
+  sJ('bjr','sr',hR&&!j.r,j.r);
+  sJ('bjm','sm',hN&&!j.m,j.m);
+  sJ('bjf','sf',hA&&rDone&&!j.f,j.f);
+  sJ('bjc','sc',hA&&rDone&&(!hN||j.m),0);
   renderVCDLo();
 }
 function sJ(b,s,r,d){const be=document.getElementById(b),se=document.getElementById(s);if(!be)return;be.disabled=!r&&!d;if(d){be.className='jb done';se.textContent='done';se.className='jt done';}else if(r){be.className='jb rdy';se.textContent='ready';se.className='jt rdy';}else{be.className='jb';se.textContent='idle';se.className='jt idle';}}
 function selU(i){aU=i;render();}
 function fillMax(){const u=S.users[aU];if(u.n31>0)document.getElementById('irut').value=String(u.n31);}
 
-function doNap(){const a=gA('inap'),u=S.users[aU];if(a<=0||a>u.vi){log('Nạp thất bại','err');return;}if(u.sN+a>5e7){log('Tối đa 50tr/phiên','err');return;}u.vi-=a;u.sN+=a;u.n31+=a;u.simpleN31+=a;u.simpleCapDiff=true;S.thuHo+=a;S.sN+=a;S.phase='REALTIME';addLsgd(aU,'deposit',0,0,a);log('User '+UN[aU]+' nạp '+fN(a),'ok');aLogAdd('NẠP',{user:UN[aU],amount:a});addF('nap',aU,a);render();}
-function doRut(){const a=gA('irut'),u=S.users[aU];if(a<=0){log('Không hợp lệ','err');return;}if(a>u.n31){log('Vượt N31','err');return;}if(S.pool<a){log('Pool không đủ','err');return;}S.pool-=a;u.vi+=a;u.sR+=a;S.sU+=a;u.n31-=a;u.simpleN31=Math.max(0,u.simpleN31-a);S.phase='REALTIME';addLsgd(aU,'withdraw',0,0,a);log('User '+UN[aU]+' rút '+fN(a),'ok');aLogAdd('RÚT',{user:UN[aU],amount:a});addF('rut',aU,a);render();}
+function doNap(){const a=gA('inap'),u=S.users[aU];if(a<=0||a>u.vi){log('Nạp thất bại','err');return;}if(u.sN+a>5e7){log('Tối đa 50tr/phiên','err');return;}u.vi-=a;u.sN+=a;u.n31+=a;u.simpleN31+=a;u.simpleCapDiff=true;S.thuHo+=a;S.sN+=a;S.phase='REALTIME';S.sesOpen=true;addLsgd(aU,'deposit',0,0,a);log('User '+UN[aU]+' nạp '+fN(a),'ok');aLogAdd('NẠP',{user:UN[aU],amount:a});addF('nap',aU,a);render();}
+function doRut(){const a=gA('irut'),u=S.users[aU];if(a<=0){log('Không hợp lệ','err');return;}if(a>u.n31){log('Vượt N31','err');return;}if(S.pool<a){log('Pool không đủ','err');return;}S.pool-=a;u.vi+=a;u.sR+=a;S.sU+=a;u.n31-=a;u.simpleN31=Math.max(0,u.simpleN31-a);S.phase='REALTIME';S.sesOpen=true;addLsgd(aU,'withdraw',0,0,a);log('User '+UN[aU]+' rút '+fN(a),'ok');aLogAdd('RÚT',{user:UN[aU],amount:a});addF('rut',aU,a);render();}
 
 function jRut(){
   saveSnap('Job Rút');S.phase='JOBS';let tS=0,tC=0,aW=0;const perU=[];
@@ -547,44 +558,185 @@ function jRut(){
   if(aW>0)S.thuHo=Math.round((S.thuHo+aW)*100)/100;S.sW=aW;S.jobs.r=1;
   log('Job Rút ✓','ok');aLogAdd('JOB_RÚT',{totalSell:fCD(tS),totalCash:tC,totalWd:aW});addF('jobRut',null,{tS,tC,aW,perU});render();renderCDLo();
 }
-function jMoMo(){
-  saveSnap('Job MoMo');S.phase='JOBS';
-  // Thu hộ TVAM chứa: tiền nạp (sN) + tiền withdraw hoàn (từ jRut)
-  // Job MoMo chỉ xử lý:
-  //   1. Refill Pool = sU (phần Pool đã ứng cho rút realtime)
-  //   2. Chuyển net nạp phiên (sN) qua VCB → deposit_Tổng
-  // Phần còn lại (cash_remain đọng) giữ nguyên tại Thu hộ TVAM
-  const rf = Math.min(S.sU, S.thuHo); // refill Pool đúng bằng số đã ứng
+function jRefill(){
+  saveSnap('Job Hoàn ứng');S.phase='JOBS';
+  const rf=Math.min(S.sU,S.thuHo);
   if(rf>0){S.pool=Math.round((S.pool+rf)*100)/100;S.thuHo=Math.round((S.thuHo-rf)*100)/100;}
-  const netNap = S.sN; // phần net nạp phiên chuyển qua VCB
-  const transfer = Math.min(netNap, S.thuHo); // không chuyển nhiều hơn thuHo còn lại
-  if(transfer>0){
-    S.thuHo=Math.round((S.thuHo-transfer)*100)/100;
-    S.vMT=Math.round((S.vMT+transfer)*100)/100;
-  }
-  // deposit_Tổng: MoMo_Tổng → TVAM_Tổng
+  S.jobs.f=1;
+  log('Job Hoàn ứng ✓ | Refill Pool '+fN(rf),'ok');
+  aLogAdd('JOB_HOÀN_ỨNG',{refill:rf});
+  addF('jobRefill',null,{rf});render();
+}
+function jMoMo(){}
+function jVCB(){}
+function jNap(){
+  saveSnap('Job Nạp');S.phase='JOBS';
+  // ── Step 1: TVAM_Netoff — tính net dương per user
+  const perU=[];let aD=0;
+  S.users.forEach((u,i)=>{
+    const nD=Math.max(0,u.sN-u.sR);
+    if(!nD){perU.push(null);return;}
+    perU.push({dep:nD,buy:0,paid:0});
+  });
+
+  // ── Step 2: TVAM request MoMo → MoMo transfer
+  const netPositive=S.users.reduce((sum,u)=>sum+Math.max(0,u.sN-u.sR),0);
+  const tvamRequest=Math.round(netPositive*100)/100;
+  const transfer=Math.min(tvamRequest,S.thuHo);
+  if(transfer>0){S.thuHo=Math.round((S.thuHo-transfer)*100)/100;S.vMT=Math.round((S.vMT+transfer)*100)/100;}
+  const dongLai=Math.round(S.thuHo);
+
+  // ── Step 3: VCB_DepositTổng: MoMo_Tổng → TVAM_Tổng
   const dp=Math.max(0,S.vMT);
   if(dp>0){S.vMT=Math.round((S.vMT-dp)*100)/100;S.vT=Math.round((S.vT+dp)*100)/100;}
-  S.jobs.m=1;
-  const dongLai=Math.round(S.thuHo); // phần đọng lại
-  log('Job MoMo ✓ | Refill '+fN(rf)+' | Net nạp '+fN(transfer)+(dongLai>0?' | Đọng '+fN(dongLai):''),'ok');
-  aLogAdd('JOB_MOMO',{refill:rf,transfer:transfer,deposit:dp,dongLai:dongLai});
-  addF('jobMoMo',null,{rf,transfer,dp,dongLai});render();
-}
-function jNap(){
-  saveSnap('Job Nạp');S.phase='JOBS';let aD=0,tB=0,tP=0;const perU=[];
-  S.users.forEach((u,i)=>{const nD=Math.max(0,u.sN-u.sR);if(!nD){perU.push(null);return;}u.cash=Math.round((u.cash+nD)*100)/100;S.vUC[i]=Math.round((S.vUC[i]+nD)*100)/100;aD+=nD;perU.push({dep:nD,buy:0,paid:0});});
+
+  // ── Step 4: VCB_DepositUser: TVAM_Tổng → TVAM_User + cộng vào u.cash
+  S.users.forEach((u,i)=>{
+    const nD=Math.max(0,u.sN-u.sR);if(!nD)return;
+    u.cash=Math.round((u.cash+nD)*100)/100;
+    S.vUC[i]=Math.round((S.vUC[i]+nD)*100)/100;
+    aD+=nD;
+  });
   if(aD>0)S.vT=Math.round((S.vT-aD)*100)/100;
+
+  // ── Step 5: TVAM_BuyCD + VCB_BuyCD
+  let tB=0,tP=0;
   S.users.forEach((u,i)=>{if(u.sN<=u.sR||u.cash<1)return;let cl=u.cash;
-    // Lot order: custom priority or auto (qty desc)
     let loOrder;
     if(loPri.length>0){loOrder=loPri.filter(li=>li<cL.length&&cL[li].qty>MC).map(li=>({l:cL[li],li}));cL.forEach((l,li)=>{if(!loOrder.find(x=>x.li===li)&&l.qty>MC)loOrder.push({l,li});});}
     else{loOrder=cL.map((l,li)=>({l,li})).filter(x=>x.l.qty>MC).sort((a,b)=>b.l.qty-a.l.qty);}
-    for(const{l,li}of loOrder){if(cl<1)break;const pT=l.pX||pR((l.pN||l.p0)*(1+LS/365));const q=Math.min(Math.floor(l.qty*1e6)/1e6,Math.floor(cl/pT*1e6)/1e6);if(q<MC)continue;const pd=Math.floor(q*pT);l.qty=Math.round((l.qty-q)*1e6)/1e6;eL(u,li);u.lots[li].qty=Math.round((u.lots[li].qty+q)*1e6)/1e6;u.lots[li].capDiff=Math.round((u.lots[li].capDiff+q)*1e6)/1e6;u.capDiff=Math.round((u.capDiff+q)*1e6)/1e6;u.cd=Math.round(u.lots.reduce((s,l)=>s+(l?l.qty:0),0)*1e6)/1e6;cl=Math.round((cl-pd)*100)/100;S.vUCD[i]=Math.round((S.vUCD[i]+q)*1e6)/1e6;S.vFCD=Math.round((S.vFCD-q)*1e6)/1e6;S.vUC[i]=Math.round((S.vUC[i]-pd)*100)/100;S.vFC=Math.round((S.vFC+pd)*100)/100;if(perU[i]){perU[i].buy=Math.round((perU[i].buy+q)*1e6)/1e6;perU[i].paid=Math.round((perU[i].paid+pd)*100)/100;}tB=Math.round((tB+q)*1e6)/1e6;tP=Math.round((tP+pd)*100)/100;addLsgd(i,'buy',q,pT,pd,li);break;}u.cash=cl;});
-  S.jobs.n=1;S.phase='IDLE';log('Job Nạp ✓','ok');aLogAdd('JOB_NẠP',{totalDep:aD,totalBuy:fCD(tB),totalPaid:tP});addF('jobNap',null,{aD,tB,tP,perU});render();renderCDLo();
+    for(const{l,li}of loOrder){if(cl<1)break;const pT=l.pX||pR((l.pN||l.p0)*(1+LS/365));const q=Math.min(Math.floor(l.qty*1e6)/1e6,Math.floor(cl/pT*1e6)/1e6);if(q<MC)continue;const pd=Math.floor(q*pT);l.qty=Math.round((l.qty-q)*1e6)/1e6;eL(u,li);u.lots[li].qty=Math.round((u.lots[li].qty+q)*1e6)/1e6;u.lots[li].capDiff=Math.round((u.lots[li].capDiff+q)*1e6)/1e6;u.capDiff=Math.round((u.capDiff+q)*1e6)/1e6;u.cd=Math.round(u.lots.reduce((s,l)=>s+(l?l.qty:0),0)*1e6)/1e6;cl=Math.round((cl-pd)*100)/100;S.vUCD[i]=Math.round((S.vUCD[i]+q)*1e6)/1e6;S.vFCD=Math.round((S.vFCD-q)*1e6)/1e6;S.vUC[i]=Math.round((S.vUC[i]-pd)*100)/100;S.vFC=Math.round((S.vFC+pd)*100)/100;if(perU[i]){perU[i].buy=Math.round((perU[i].buy+q)*1e6)/1e6;perU[i].paid=Math.round((perU[i].paid+pd)*100)/100;}tB=Math.round((tB+q)*1e6)/1e6;tP=Math.round((tP+pd)*100)/100;addLsgd(i,'buy',q,pT,pd,li);break;}u.cash=cl;
+  });
+
+  S.jobs.m=1;S.jobs.n=1;S.phase='IDLE';
+  log('Job Nạp ✓ | Request '+fN(tvamRequest)+' | DepositUser '+fN(aD)+' | BuyCD '+fCD(tB),'ok');
+  aLogAdd('JOB_NẠP',{tvamRequest,transfer,dp,aD,totalBuy:fCD(tB),totalPaid:tP});
+  addF('jobNap',null,{tvamRequest,transfer,dp,dongLai,aD,tB,tP,perU});
+  render();renderCDLo();
 }
-function closeSes(){clearHL();S.bId++;S.phase='IDLE';S.sN=0;S.sU=0;S.sW=0;S.vMT=0;S.users.forEach(u=>{u.sN=0;u.sR=0;});S.jobs={r:0,m:0,n:0};snap=null;document.getElementById('brl').disabled=true;log('Đóng phiên ✓','ok');aLogAdd('ĐÓNG_PHIÊN',{bId:S.bId});fSt=[];fI=-1;clrB();uFB();render();}
+function checkSwapAlerts(){
+  const labels='ABCDEFGH';
+  const el=document.getElementById('swapAlerts');
+  const swapBtn=document.getElementById('bjs');
+  const swapLbl=document.getElementById('swapLbl');
+  if(!el)return;
+  let html='';let canSwap=false;let swapInfo=[];
+  cL.forEach((lo,li)=>{
+    const daysLeft=lo.e-S.day; // số ngày còn lại đến đáo hạn
+    // Chỉ check lô có user đang nắm
+    const usersHolding=S.users.filter(u=>u.lots[li]&&u.lots[li].qty>MC);
+    if(!usersHolding.length)return;
+    if(daysLeft<=0)return; // đã đáo hạn rồi
+    if(daysLeft<=3){
+      // Kiểm tra kho có lô mới không
+      const hasNewLot=cL.some((nl,nli)=>nli!==li&&nl.qty>MC&&(nl.e-S.day)>3);
+      if(!hasNewLot){
+        html+=`<div style="font-size:8px;padding:3px 6px;background:rgba(220,38,38,.1);border-left:2px solid var(--neg);border-radius:2px;margin-bottom:3px">🚨 P0: Lô ${labels[li]} đáo hạn T+${daysLeft} — kho trống!</div>`;
+      } else {
+        canSwap=true;
+        swapInfo.push({li,lo,daysLeft});
+        html+=`<div style="font-size:8px;padding:3px 6px;background:rgba(217,119,6,.1);border-left:2px solid var(--warn);border-radius:2px;margin-bottom:3px">⚠ Lô ${labels[li]}: còn ${daysLeft} ngày — swap T-3</div>`;
+      }
+    } else if(daysLeft<=5){
+      html+=`<div style="font-size:8px;padding:3px 6px;background:rgba(234,179,8,.08);border-left:2px solid #ca8a04;border-radius:2px;margin-bottom:3px">📋 Lô ${labels[li]}: còn ${daysLeft} ngày — chuẩn bị swap</div>`;
+    }
+  });
+  el.innerHTML=html;
+  // Chỉ enable swap sau khi đóng phiên
+  if(swapBtn){
+    const sesClose=!S.sesOpen;
+    swapBtn.disabled=!(canSwap&&sesClose);
+    if(canSwap&&swapInfo.length){
+      swapLbl.textContent=sesClose?swapInfo.map(s=>`Lô ${('ABCDEFGH')[s.li]}`).join(', '):'(đóng phiên trước)';
+      if(!sesClose)swapLbl.style.color='var(--muted)';
+      else swapLbl.style.color='';
+    } else {
+      swapLbl.textContent='';
+    }
+  }
+  // Store pending swap info
+  S.pendingSwap=swapInfo;
+}
+
+function jSwap(){
+  if(!S.pendingSwap||!S.pendingSwap.length){log('Không có lô nào cần swap','err');return;}
+  saveSnap('Job Swap');
+  const labels='ABCDEFGH';
+  const swapResults=[];
+  S.pendingSwap.forEach(({li,lo})=>{
+    // Lô mới: chọn lô có qty > 0, không phải lô đang swap, còn nhiều ngày nhất
+    const newLotIdx=cL.map((nl,nli)=>({nl,nli}))
+      .filter(({nl,nli})=>nli!==li&&nl.qty>MC&&(nl.e-S.day)>3)
+      .sort((a,b)=>(b.nl.e-S.day)-(a.nl.e-S.day))[0]?.nli;
+    if(newLotIdx==null){log(`Lô ${labels[li]}: không tìm được lô mới!`,'err');return;}
+    const newLo=cL[newLotIdx];
+    const pSell=lo.pN||lo.p0; // giá bán = giá hiện tại T
+    // Giá mua lô mới = present value theo LS_user
+    const remainTenor=newLo.e-S.day;
+    const pBuy=pR(newLo.face*(1+newLo.rate/100*newLo.tenor/365)/Math.pow(1+LS/365,remainTenor));
+    let perUser=[];
+    S.users.forEach((u,ui)=>{
+      const lot=u.lots[li];
+      if(!lot||lot.qty<=MC)return;
+      const qSell=lot.qty;
+      const cashFromSell=Math.floor(qSell*pSell);
+      // Mua lô mới với số tiền thu về
+      const qBuy=Math.min(Math.floor(cashFromSell/pBuy*1e6)/1e6, newLo.qty);
+      const cashPaid=Math.floor(qBuy*pBuy);
+      const cashRemain=cashFromSell-cashPaid;
+      // Cập nhật user lots
+      u.lots[li]={qty:0,capDiff:0}; // xóa lô cũ
+      eL(u,newLotIdx);
+      u.lots[newLotIdx].qty=Math.round((u.lots[newLotIdx].qty+qBuy)*1e6)/1e6;
+      // capDiff = 0 vì swap không phải mua mới (lãi đã nhúng vào giá liên tục)
+      u.lots[newLotIdx].capDiff=0;
+      u.cd=Math.round(u.lots.reduce((s,l)=>s+(l?l.qty:0),0)*1e6)/1e6;
+      u.capDiff=Math.round(u.lots.reduce((s,l)=>s+(l?l.capDiff:0),0)*1e6)/1e6;
+      // u.n31 không đổi
+      if(cashRemain>0){u.cash=Math.round((u.cash+cashRemain)*100)/100;}
+      // VCB: sell CD → tiền về vUC, rồi dùng tiền đó mua CD mới
+      S.vUCD[ui]=Math.round((S.vUCD[ui]-qSell)*1e6)/1e6;
+      S.vFCD=Math.round((S.vFCD+qSell)*1e6)/1e6;
+      S.vUC[ui]=Math.round((S.vUC[ui]+cashFromSell)*100)/100;
+      S.vFC=Math.round((S.vFC-cashFromSell)*100)/100;
+      S.vUC[ui]=Math.round((S.vUC[ui]-cashPaid)*100)/100;
+      S.vFC=Math.round((S.vFC+cashPaid)*100)/100;
+      S.vUCD[ui]=Math.round((S.vUCD[ui]+qBuy)*1e6)/1e6;
+      S.vFCD=Math.round((S.vFCD-qBuy)*1e6)/1e6;
+      addLsgd(ui,'swap',qBuy,pBuy,cashPaid,newLotIdx);
+      perUser.push({ui,qSell,pSell,cashFromSell,qBuy,pBuy,cashPaid,cashRemain,oldLi:li,newLi:newLotIdx});
+    });
+    // Cập nhật kho
+    const totalSold=perUser.reduce((s,p)=>s+p.qSell,0);
+    const totalBought=perUser.reduce((s,p)=>s+p.qBuy,0);
+    lo.qty=Math.round((lo.qty+totalSold)*1e6)/1e6; // hoàn lô cũ về kho
+    newLo.qty=Math.round((newLo.qty-totalBought)*1e6)/1e6;
+    swapResults.push({li,newLi:newLotIdx,pSell,pBuy,perUser});
+    log(`Job Swap ✓ Lô ${labels[li]} → Lô ${labels[newLotIdx]} | Giá bán ${fP(pSell)} | Giá mua ${fP(pBuy)}`,'ok');
+  });
+  document.getElementById('bjs').disabled=true;
+  document.getElementById('ss').textContent='done';
+  document.getElementById('ss').className='jt done';
+  aLogAdd('JOB_SWAP',{swapResults});
+  addF('jobSwap',null,{swapResults});
+  S.pendingSwap=[];
+  render();renderCDLo();checkSwapAlerts();
+}
+function closeSes(){S.phase='IDLE';S.sesOpen=false;S.sN=0;S.sU=0;S.sW=0;S.vMT=0;
+  S.users.forEach(u=>{u.sN=0;u.sR=0;});
+  S.jobs={r:0,f:0,m:0,v:0,n:0};snap=null;
+  document.getElementById('brl').disabled=true;
+  log('Đóng phiên ✓','ok');
+  // Warning nếu Pool chưa được hoàn đủ
+  const poolDiff=Math.round(PX-S.pool);
+  if(poolDiff>0) log('⚠ Pool chưa hoàn ứng: thiếu '+fN(poolDiff)+' — cần hoàn trước cutoff ngày','warn');
+  aLogAdd('ĐÓNG_PHIÊN',{bId:S.bId});fSt=[];fI=-1;clrB();uFB();render();
+}
 function advDay(){
+  // Block nếu phiên đang mở
+  if(S.sesOpen){log('⚠ Đóng phiên trước khi qua ngày','err');return;}
+  // Block nếu có lô cần swap nhưng chưa chạy
+  if(S.pendingSwap&&S.pendingSwap.length){log('⚠ Cần chạy Job Swap trước khi qua ngày','err');return;}
   // Apply pending LS nếu đến ngày T+2
   if(S.pendingLS&&S.day+1>=S.pendingLS.applyOnDay){
     const oldPct=Math.round(LS*10000)/100;
@@ -616,7 +768,7 @@ function advDay(){
   // Show hint if capDiff was present (first advance after buy → no interest yet, need T2)
   const ah=document.getElementById('advHint');
   if(ah) ah.style.display=hadCapDiff?'block':'none';
-  log('T'+S.day+': '+fP(S.price),'warn');aLogAdd('QUA_NGÀY',{day:S.day,lãi:perLai.map((l,i)=>UN[i]+':'+l).join(' ')});addF('interest',null,{day:S.day,perLai});renderLaiLog();renderCDLo();renderPriceTable();renderCmpTable();render();
+  log('T'+S.day+': '+fP(S.price),'warn');aLogAdd('QUA_NGÀY',{day:S.day,lãi:perLai.map((l,i)=>UN[i]+':'+l).join(' ')});addF('interest',null,{day:S.day,perLai});renderLaiLog();renderCDLo();renderPriceTable();renderCmpTable();checkSwapAlerts();render();
 }
 
 // ══════════════════════════════════════════════
@@ -649,28 +801,94 @@ function addF(action,uI,data){
     steps.push({from:'pl',to:'vi',label:'Pool ứng → Ví '+uN,amt:fN(data),color:uc,usr:uI});
   }else if(action==='jobRut'){
     const{tS,tC,aW,perU}=data;
-    steps.push({phase:'Job Rút — TVAM'});
-    perU.forEach((pu,idx)=>{if(!pu||pu.sell<=0)return;const c=UCOL[idx],n=UN[idx];steps.push({from:'usr',to:'fs',label:n+' sell_CD',amt:fCD(pu.sell)+' CD',color:c,usr:idx});steps.push({from:'fs',to:'usr',label:n+' tiền bán',amt:fN(pu.cash),color:c,usr:idx});});
+    // 1. TVAM_SellCD — user bán CD ở TVAM trước
+    steps.push({phase:'Job Rút — TVAM_SellCD · VCB_SellCD'});
+    perU.forEach((pu,idx)=>{if(!pu||pu.sell<=0)return;const c=UCOL[idx],n=UN[idx];
+      steps.push({from:'usr',to:'fs',label:n+' sell_CD',amt:fCD(pu.sell)+' CD',color:c,usr:idx});
+      steps.push({from:'fs',to:'usr',label:n+' tiền bán',amt:fN(pu.cash),color:c,usr:idx});
+    });
+    // 2. VCB_SellCD — lưu ký sau khi TVAM xác nhận
+    
+    perU.forEach((pu,idx)=>{if(!pu||pu.sell<=0)return;const c=UCOL[idx],n=UN[idx];
+      steps.push({from:'vtu',to:'vtf',label:n+' sell_CD',amt:fCD(pu.sell)+' CD',color:c,usr:idx});
+      steps.push({from:'vtf',to:'vtu',label:n+' tiền bán',amt:fN(pu.cash),color:c,usr:idx});
+    });
+    // 3. TVAM_Withdraw — trả tiền về user
+    steps.push({phase:'Job Rút — TVAM_Withdraw · VCB_Withdraw'});
     perU.forEach((pu,idx)=>{if(!pu||pu.wd<=0)return;const c=UCOL[idx],n=UN[idx];const ex=pu.cashExtra||0;const tot=pu.wd+ex;
       steps.push({from:'usr',to:'usr',label:n+' withdraw'+(ex>0?' (+'+fN(ex)+' cash dư)':''),amt:'-'+fN(tot),color:c,self:true,usr:idx});
     });
-    if(tS>0||aW>0)steps.push({phase:'Job Rút — VCB'});
-    perU.forEach((pu,idx)=>{if(!pu||pu.sell<=0)return;const c=UCOL[idx],n=UN[idx];steps.push({from:'vtu',to:'vtf',label:n+' sell_CD',amt:fCD(pu.sell)+' CD',color:c,usr:idx});steps.push({from:'vtf',to:'vtu',label:n+' tiền bán',amt:fN(pu.cash),color:c,usr:idx});});
-    if(aW>0){steps.push({from:'vtu',to:'vtt',label:'→ TVAM_Tổng',amt:fN(aW),color:'var(--vcb)'});steps.push({from:'vtt',to:'vmt',label:'→ MoMo_Tổng',amt:fN(aW),color:'var(--momo)'});steps.push({from:'vmt',to:'thv',label:'→ Thu hộ VCB',amt:fN(aW),color:'var(--momo)'});steps.push({from:'thv',to:'th',label:'→ Thu hộ TVAM (đọng '+fN(aW)+')',amt:fN(aW),color:'var(--momo)'});}
-  }else if(action==='jobMoMo'){
-    const{rf,transfer,dp,dongLai}=data;steps.push({phase:'Job MoMo'});
-    if(rf>0)steps.push({from:'th',to:'pl',label:'Refill Pool (hoàn ứng)',amt:'+'+fN(rf),color:'var(--fs)'});
-    if(transfer>0){
-      steps.push({from:'th',to:'thv',label:'Net nạp → Thu hộ VCB',amt:fN(transfer),color:'var(--momo)'});
-      steps.push({from:'thv',to:'vmt',label:'→ MoMo_Tổng',amt:fN(transfer),color:'var(--momo)'});
-      if(dp>0)steps.push({from:'vmt',to:'vtt',label:'deposit_Tổng',amt:fN(dp),color:'var(--vcb)'});
+    // 4. TVAM request VCB_Withdraw
+    if(aW>0){
+      steps.push({from:'usr',to:'vtt',label:'TVAM request VCB_Withdraw',amt:fN(aW),color:'var(--tvam)',dashed:true});
+      
+      steps.push({from:'vtu',to:'vtt',label:'→ TVAM_Tổng',amt:fN(aW),color:'var(--vcb)'});
+      steps.push({from:'vtt',to:'vmt',label:'→ MoMo_Tổng',amt:fN(aW),color:'var(--momo)'});
+      steps.push({from:'vmt',to:'thv',label:'→ Thu hộ VCB',amt:fN(aW),color:'var(--momo)'});
+      steps.push({from:'thv',to:'th',label:'→ Thu hộ TVAM',amt:fN(aW),color:'var(--momo)'});
     }
-    if(dongLai>0)steps.push({from:'th',to:'th',label:'Đọng tại Thu hộ TVAM',amt:fN(dongLai),color:'var(--muted)',self:true});
+  }else if(action==='jobRefill'){
+    const{rf}=data;steps.push({phase:'Job Hoàn ứng — Refill Pool'});
+    if(rf>0)steps.push({from:'th',to:'pl',label:'Hoàn ứng Pool',amt:'+'+fN(rf),color:'var(--fs)'});
+  }else if(action==='jobMoMo'){
+    // không còn dùng — gộp vào jobNap
+  }else if(action==='jobVCB'){
+    // không còn dùng — gộp vào jobNap
   }else if(action==='jobNap'){
-    const{aD,tB,tP,perU}=data;steps.push({phase:'Job Nạp — TVAM'});
-    perU.forEach((pu,idx)=>{if(!pu)return;const c=UCOL[idx],n=UN[idx];if(pu.dep>0)steps.push({from:'n31',to:'usr',label:n+' netoff',amt:fN(pu.dep),color:c,usr:idx});if(pu.buy>0){steps.push({from:'usr',to:'fs',label:n+' buy_CD',amt:fN(pu.paid),color:c,usr:idx});steps.push({from:'fs',to:'usr',label:n+' nhận CD',amt:fCD(pu.buy)+' CD',color:c,usr:idx});}});
-    if(aD>0||tB>0)steps.push({phase:'Job Nạp — VCB'});
-    perU.forEach((pu,idx)=>{if(!pu||pu.dep<=0)return;const c=UCOL[idx],n=UN[idx];steps.push({from:'vtt',to:'vtu',label:n+' deposit_User',amt:fN(pu.dep),color:c,usr:idx});if(pu.buy>0){steps.push({from:'vtu',to:'vtf',label:n+' buy_CD',amt:fN(pu.paid),color:c,usr:idx});steps.push({from:'vtf',to:'vtu',label:n+' CD→User',amt:fCD(pu.buy)+' CD',color:c,usr:idx});}});
+    const{tvamRequest,transfer,dp,dongLai,aD,tB,tP,perU}=data;
+    // Phase 1: TVAM_Netoff + TVAM request MoMo + MoMo_Transfer
+    steps.push({phase:'Job Nạp — TVAM_Netoff · MoMo_Transfer'});
+    if(tvamRequest>0)steps.push({from:'n31',to:'th',label:'TVAM request MoMo',amt:fN(tvamRequest),color:'var(--tvam)',dashed:true});
+    if(transfer>0){
+      steps.push({from:'th',to:'thv',label:'MoMo transfer',amt:fN(transfer),color:'var(--momo)'});
+      steps.push({from:'thv',to:'vmt',label:'→ MoMo_Tổng',amt:fN(transfer),color:'var(--momo)'});
+    }
+    if(dp>0)steps.push({from:'vmt',to:'vtt',label:'deposit_Tổng',amt:fN(dp),color:'var(--vcb)'});
+    if(dongLai>0)steps.push({from:'th',to:'th',label:'Đọng',amt:fN(dongLai),color:'var(--muted)',self:true});
+    // Phase 2: TVAM ghi nhận hết tất cả user → VCB lưu ký batch
+    if(aD>0)steps.push({phase:'Job Nạp — VCB_DepositTổng · VCB_DepositUser'});
+    perU.forEach((pu,idx)=>{if(!pu||pu.dep<=0)return;const c=UCOL[idx],n=UN[idx];
+      steps.push({from:'n31',to:'usr',label:n+' TVAM ghi nhận',amt:fN(pu.dep),color:c,usr:idx});
+    });
+    perU.forEach((pu,idx)=>{if(!pu||pu.dep<=0)return;const c=UCOL[idx],n=UN[idx];
+      steps.push({from:'vtt',to:'vtu',label:n+' VCB lưu ký',amt:fN(pu.dep),color:c,usr:idx});
+    });
+    // Phase 3: TVAM buy_CD hết tất cả user → VCB lưu ký batch
+    if(tB>0)steps.push({phase:'Job Nạp — TVAM_BuyCD · VCB_BuyCD'});
+    perU.forEach((pu,idx)=>{if(!pu||!pu.buy)return;const c=UCOL[idx],n=UN[idx];
+      steps.push({from:'usr',to:'fs',label:n+' buy_CD',amt:fN(pu.paid),color:c,usr:idx});
+      steps.push({from:'fs',to:'usr',label:n+' nhận CD',amt:fCD(pu.buy)+' CD',color:c,usr:idx});
+    });
+    perU.forEach((pu,idx)=>{if(!pu||!pu.buy)return;const c=UCOL[idx],n=UN[idx];
+      steps.push({from:'vtu',to:'vtf',label:n+' VCB lưu ký',amt:fN(pu.paid),color:c,usr:idx});
+      steps.push({from:'vtf',to:'vtu',label:n+' CD→User',amt:fCD(pu.buy)+' CD',color:c,usr:idx});
+    });
+  }else if(action==='jobSwap'){
+    const{swapResults}=data;
+    const labels='ABCDEFGH';
+    swapResults.forEach(({li,newLi,pSell,pBuy,perUser})=>{
+      // ── Session 1: Bán lô cũ (tất cả user) → Finsight nhận CD, trả tiền
+      steps.push({phase:`Job Swap — Session 1: Bán lô ${labels[li]}`});
+      perUser.forEach(p=>{const c=UCOL[p.ui],n=UN[p.ui];
+        steps.push({from:'usr',to:'fs',label:n+' sell lô '+labels[li],amt:fCD(p.qSell)+' CD',color:c,usr:p.ui});
+        steps.push({from:'fs',to:'usr',label:n+' tiền bán',amt:fN(p.cashFromSell),color:c,usr:p.ui});
+      });
+      perUser.forEach(p=>{const c=UCOL[p.ui],n=UN[p.ui];
+        steps.push({from:'vtu',to:'vtf',label:n+' sell_CD (VCB)',amt:fCD(p.qSell)+' CD',color:c,usr:p.ui});
+        steps.push({from:'vtf',to:'vtu',label:n+' tiền bán về TVAM_User',amt:fN(p.cashFromSell),color:c,usr:p.ui});
+      });
+      // ── Session 2: Mua lô mới (tất cả user) — Finsight dùng tiền thu về để giao CD mới
+      steps.push({phase:`Job Swap — Session 2: Mua lô ${labels[newLi]}`});
+      perUser.forEach(p=>{const c=UCOL[p.ui],n=UN[p.ui];
+        steps.push({from:'usr',to:'fs',label:n+' buy lô '+labels[newLi],amt:fN(p.cashPaid),color:c,usr:p.ui});
+        steps.push({from:'fs',to:'usr',label:n+' nhận CD mới',amt:fCD(p.qBuy)+' CD',color:c,usr:p.ui});
+      });
+      perUser.forEach(p=>{const c=UCOL[p.ui],n=UN[p.ui];
+        steps.push({from:'vtu',to:'vtf',label:n+' tiền mua (VCB)',amt:fN(p.cashPaid),color:c,usr:p.ui});
+        steps.push({from:'vtf',to:'vtu',label:n+' buy_CD (VCB)',amt:fCD(p.qBuy)+' CD',color:c,usr:p.ui});
+        if(p.cashRemain>0)steps.push({from:'usr',to:'usr',label:n+' cash dư',amt:fN(p.cashRemain),color:c,self:true,usr:p.ui});
+      });
+    });
   }else if(action==='interest'){
     const{day,perLai}=data;if(perLai.some(l=>l>0)){steps.push({phase:'T'+day+' — Tính lãi'});perLai.forEach((lai,idx)=>{if(lai<=0)return;steps.push({from:'n31',to:'n31',label:UN[idx]+' lãi T'+day,amt:'+'+fN(lai),color:UCOL[idx],self:true,usr:idx});});}
   }
@@ -688,7 +906,10 @@ function renderRows(){
     if(s.usr!=null){const badge=document.createElement('div');badge.className='ubadge';badge.textContent=UN[s.usr];badge.style.background=UBGL[s.usr];badge.style.color=UCOL[s.usr];badge.style.border='1px solid '+UCOL[s.usr];row.appendChild(badge);}
     if(s.self){const cp=cP(s.from);const bar=document.createElement('div');bar.style.cssText=`position:absolute;left:calc(${cp}% - 5px);top:calc(50% - 12px);width:10px;height:24px;border:2px solid ${c};background:${c}22;border-radius:2px;z-index:5`;if(i===fI)bar.style.animation='actPulse .5s ease-out';row.appendChild(bar);const lbl=document.createElement('div');lbl.className='seq-lbl';lbl.style.cssText=`left:calc(${cp}% + 12px);top:50%;transform:translateY(-50%);bottom:auto;margin-bottom:0;color:${c};font-weight:600`;lbl.innerHTML=`${s.label} <b>${s.amt}</b>`;row.appendChild(lbl);b.appendChild(row);y+=RH;return;}
     const fp=cP(s.from),tp=cP(s.to),lp=Math.min(fp,tp),rp=Math.max(fp,tp),wp=rp-lp,goR=tp>fp;
-    const arr=document.createElement('div');arr.className='seq-arrow';arr.style.cssText=`left:${lp}%;width:${wp}%;top:50%;transform:translateY(-50%);background:${c};position:absolute`;const hd=document.createElement('div');hd.className='arr-hd '+(goR?'r':'l');hd.style.color=c;hd.style.cssText+=`;position:absolute;top:50%;transform:translateY(-50%)`;if(goR)hd.style.right='0';else hd.style.left='0';arr.appendChild(hd);row.appendChild(arr);
+    const arr=document.createElement('div');arr.className='seq-arrow';
+    const dashedBg=s.dashed?`repeating-linear-gradient(90deg,${c} 0,${c} 6px,transparent 6px,transparent 10px)`:`${c}`;
+    arr.style.cssText=`left:${lp}%;width:${wp}%;top:50%;transform:translateY(-50%);background:${dashedBg};position:absolute`;
+    const hd=document.createElement('div');hd.className='arr-hd '+(goR?'r':'l');hd.style.color=c;hd.style.cssText+=`;position:absolute;top:50%;transform:translateY(-50%)`;if(goR)hd.style.right='0';else hd.style.left='0';arr.appendChild(hd);row.appendChild(arr);
     const lbl=document.createElement('div');lbl.className='seq-lbl';lbl.style.left=((lp+rp)/2)+'%';lbl.style.transform='translateX(-50%)';lbl.style.color=c;lbl.innerHTML=`${s.label} <b>${s.amt}</b>`;row.appendChild(lbl);
     const ball=document.createElement('div');ball.className='seq-ball';ball.style.background=c;ball.style.color=c;ball.style.top='calc(50% - 6px)';ball.dataset.from=fp;ball.dataset.to=tp;
     if(i===fI){ball.className='seq-ball ready';ball.style.left=fp+'%';setTimeout(()=>{ball.className='seq-ball moving';ball.style.left=tp+'%';setTimeout(()=>{ball.className='seq-ball arrived';ball.style.left=tp+'%';},650);},30);}
@@ -736,12 +957,19 @@ iCL();resetAll();
 
     <div class="guide-sec">
       <h4>Luồng cơ bản — thử theo thứ tự này</h4>
-      <div class="guide-item u"><div class="guide-lbl">① Chọn user &amp; Nạp</div><div class="guide-desc">Chọn User A/B/C ở panel trái, nhập số tiền, bấm Nạp. Tiền vào Ngăn 31 ngay lập tức.</div></div>
-      <div class="guide-item t"><div class="guide-lbl">② Job Rút</div><div class="guide-desc">Nếu có user rút tiền trong phiên — chạy job này trước để bán CD hoàn Pool.</div></div>
-      <div class="guide-item t"><div class="guide-lbl">③ Job MoMo</div><div class="guide-desc">Gom tiền nạp từ Thu hộ, bù Pool nếu thiếu, chuyển sang VCB chuẩn bị mua CD.</div></div>
-      <div class="guide-item t"><div class="guide-lbl">④ Job Nạp</div><div class="guide-desc">Dùng tiền ở VCB mua CD cho từng user. Lãi tính từ T+2.</div></div>
-      <div class="guide-item t"><div class="guide-lbl">⑤ Đóng phiên</div><div class="guide-desc">Kết thúc phiên hôm nay. Bắt buộc trước khi bấm Qua ngày.</div></div>
-      <div class="guide-item u"><div class="guide-lbl">⑥ Qua ngày</div><div class="guide-desc">Giả lập 1 ngày trôi qua. Giá CD tăng, Ngăn 31 tăng theo. Lãi chỉ tính từ T+2.</div></div>
+      <div class="guide-item u"><div class="guide-lbl">① Chọn user &amp; Nạp/Rút</div><div class="guide-desc">Chọn User A/B/C ở panel trái, nhập số tiền, bấm Nạp hoặc Rút. Tiền/lệnh ghi nhận ngay vào Ngăn 31.</div></div>
+      <div class="guide-item t"><div class="guide-lbl">② Job Rút (nếu có rút)</div><div class="guide-desc">TVAM bán CD → VCB lưu ký → TVAM withdraw. Có thể chạy song song với Job Nạp.</div></div>
+      <div class="guide-item t"><div class="guide-lbl">③ Job Hoàn ứng (optional)</div><div class="guide-desc">Hoàn lại tiền cho Finsight Pool sau khi Job Rút xong. Không bắt buộc mỗi phiên nhưng phải chạy trước Đóng phiên.</div></div>
+      <div class="guide-item t"><div class="guide-lbl">④ Job Nạp (nếu có nạp)</div><div class="guide-desc">TVAM request MoMo → VCB deposit → TVAM mua CD → VCB lưu ký. Có thể chạy song song với Job Rút.</div></div>
+      <div class="guide-item t"><div class="guide-lbl">⑤ Đóng phiên</div><div class="guide-desc">Kết thúc phiên hôm nay. Bắt buộc sau khi các job xong, trước khi bấm Qua ngày.</div></div>
+      <div class="guide-item u"><div class="guide-lbl">⑥ Qua ngày</div><div class="guide-desc">Giả lập 1 ngày trôi qua. Giá CD tăng, Ngăn 31 tăng theo. Lãi chỉ tính từ T+2 sau khi nạp/mua CD.</div></div>
+    </div>
+
+    <div class="guide-sec">
+      <h4>Cấu trúc Job Nạp (chi tiết)</h4>
+      <div class="guide-item t"><div class="guide-lbl">Phase 1</div><div class="guide-desc">TVAM tính net dương per user → request MoMo chuyển đúng số đó → MoMo transfer → VCB_DepositTổng (MoMo_Tổng → TVAM_Tổng).</div></div>
+      <div class="guide-item t"><div class="guide-lbl">Phase 2</div><div class="guide-desc">TVAM ghi nhận deposit cho từng user (Ngăn 31 → User) → VCB lưu ký batch (TVAM_Tổng → TVAM_User). Tất cả user TVAM trước, rồi VCB sau.</div></div>
+      <div class="guide-item t"><div class="guide-lbl">Phase 3</div><div class="guide-desc">TVAM mua CD từ Finsight cho từng user → VCB lưu ký batch. Tất cả user TVAM trước, rồi VCB sau.</div></div>
     </div>
 
     <div class="guide-sec">
@@ -749,9 +977,9 @@ iCL();resetAll();
       <div class="guide-item"><div class="guide-lbl">Ngăn 31</div><div class="guide-desc">Số dư đầu tư user thấy trên app. Tăng mỗi ngày do CD sinh lãi. Là số duy nhất user quan tâm.</div></div>
       <div class="guide-item"><div class="guide-lbl">CD (Chứng chỉ tiền gửi)</div><div class="guide-desc">Tài sản thực đứng sau Ngăn 31. Giá tăng mỗi ngày theo lãi suất. Khi user rút, TVAM bán CD lấy tiền.</div></div>
       <div class="guide-item"><div class="guide-lbl">Dirty price</div><div class="guide-desc">Giá CD mỗi ngày = giá hôm qua × (1 + LS/365). Lãi được nhúng vào giá, không tính riêng.</div></div>
-      <div class="guide-item"><div class="guide-lbl">Finsight Pool</div><div class="guide-desc">Quỹ dự phòng thanh khoản. Khi user rút, Pool ứng tiền ngay. Job Rút sau đó bán CD để hoàn Pool.</div></div>
-      <div class="guide-item"><div class="guide-lbl">LS_user</div><div class="guide-desc">Lãi suất cam kết với user (mặc định 4%/năm). Thay đổi LS_user có hiệu lực từ T+2 — T0 và T1 vẫn dùng LS cũ vì giá CD đã được chốt.</div></div>
-      <div class="guide-item"><div class="guide-lbl">T+2</div><div class="guide-desc">Lãi bắt đầu tính từ ngày thứ 2 sau khi nạp, không phải ngày nạp. Tương tự khi đổi LS_user.</div></div>
+      <div class="guide-item"><div class="guide-lbl">Finsight Pool</div><div class="guide-desc">Quỹ dự phòng thanh khoản. Khi user rút realtime, Pool ứng tiền ngay. Job Hoàn ứng trả lại Pool sau khi bán CD.</div></div>
+      <div class="guide-item"><div class="guide-lbl">LS_user</div><div class="guide-desc">Lãi suất cam kết với user (mặc định 4%/năm). Thay đổi LS_user có hiệu lực từ T+2 — T0 và T1 vẫn dùng LS cũ vì giá CD đã chốt.</div></div>
+      <div class="guide-item"><div class="guide-lbl">T+2</div><div class="guide-desc">Lãi bắt đầu tính từ ngày thứ 2 sau khi nạp/mua CD. Tương tự khi đổi LS_user.</div></div>
       <div class="guide-item"><div class="guide-lbl">capDiff</div><div class="guide-desc">Số CD vừa mua trong phiên chưa được tính lãi. Tự clear sau T+2. Hiển thị ở TVAM → Jobs → Per-user.</div></div>
     </div>
 
@@ -761,11 +989,12 @@ iCL();resetAll();
       <div class="guide-item m"><div class="guide-lbl">Panel MoMo</div><div class="guide-desc">Thu hộ TVAM = tiền nạp đang chờ xử lý. Pool = quỹ ứng rút. Tab So sánh N31 = so sánh 2 cách tính lãi.</div></div>
       <div class="guide-item t"><div class="guide-lbl">Panel TVAM</div><div class="guide-desc">Jobs = nơi chạy các batch cuối phiên. Per-user = trạng thái CD và tiền của từng user. CD Kho = kho của Finsight.</div></div>
       <div class="guide-item v"><div class="guide-lbl">Panel VCB</div><div class="guide-desc">Các tài khoản lưu ký thực tế tại ngân hàng. Đối soát = kiểm tra TVAM và VCB có khớp không.</div></div>
-      <div class="guide-item"><div class="guide-lbl">Luồng tiền</div><div class="guide-desc">Phần dưới màn hình. Mỗi khi nạp/rút/chạy job sẽ hiện animation luồng tiền giữa các bên. Bấm ▶ Play để xem lại.</div></div>
+      <div class="guide-item"><div class="guide-lbl">Luồng tiền</div><div class="guide-desc">Phần dưới màn hình. Nét liền = thực hiện, nét đứt = request. Bấm ▶ Play để xem lại animation.</div></div>
     </div>
 
     <div class="guide-sec">
       <h4>Lưu ý vận hành</h4>
+      <div class="guide-item"><div class="guide-lbl">Job Rút &amp; Job Nạp</div><div class="guide-desc">Độc lập nhau — có thể chạy theo thứ tự bất kỳ. Job Hoàn ứng phải sau Job Rút. Job Nạp không cần chờ Job Rút.</div></div>
       <div class="guide-item"><div class="guide-lbl">Thứ tự jobs</div><div class="guide-desc">Job Rút → Job MoMo → Job Nạp → Đóng phiên. Chạy sai thứ tự → dùng Rollback để hoàn tác.</div></div>
       <div class="guide-item"><div class="guide-lbl">Rollback</div><div class="guide-desc">Chỉ hoàn tác được 1 bước gần nhất. Không rollback sau khi đóng phiên.</div></div>
       <div class="guide-item"><div class="guide-lbl">Actions / Replay</div><div class="guide-desc">Nút 📋 Actions trên header để copy kịch bản, ▶ Replay để chạy lại kịch bản đã lưu.</div></div>
