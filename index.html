@@ -16,6 +16,7 @@ body{display:flex;flex-direction:column}
 .hi{font-family:var(--mono);font-size:10px;color:var(--muted)}.hi b{color:var(--text);font-weight:500}
 .hdr-r{margin-left:auto;display:flex;gap:5px}
 .hb{padding:3px 10px;border:1px solid var(--border2);background:var(--surface);font-size:10px;font-weight:500;cursor:pointer;border-radius:3px}.hb:hover{border-color:var(--text)}
+.inline-err{font-size:9px;color:var(--neg);padding:2px 6px;margin-top:2px;border-radius:3px;background:rgba(220,38,38,.07);border-left:2px solid var(--neg);display:none;font-family:var(--mono)}.inline-err.on{display:block}.inline-ok{font-size:9px;color:var(--pos);padding:2px 6px;margin-top:2px;border-radius:3px;background:rgba(21,128,61,.07);border-left:2px solid var(--pos);display:none;font-family:var(--mono)}.inline-ok.on{display:block}
 .logbar{padding:3px 14px;background:#fffef9;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}.logbar b{font-weight:600}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 /* Resizer */
@@ -76,7 +77,7 @@ body{display:flex;flex-direction:column}
 .fsi{font-family:var(--mono);font-size:9px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fsi b{color:var(--text);font-weight:600}
 .seq-wrap{flex:1;overflow-x:hidden;overflow-y:auto}.seq-wrap::-webkit-scrollbar{width:3px}.seq-wrap::-webkit-scrollbar-thumb{background:var(--border2)}
 .sys-head{display:flex;position:relative;z-index:10}.sys-band{display:flex;flex-direction:column}.sys-title{text-align:center;padding:3px 0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#fff}.sys-title.bg-m{background:var(--momo)}.sys-title.bg-t{background:var(--tvam)}.sys-title.bg-v{background:var(--vcb)}
-.sys-cols{display:flex}.sys-col{flex:1;text-align:center;padding:3px 2px;font-size:7px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-right:1px solid var(--border);background:var(--surface2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sys-col:last-child{border-right:none}
+.sys-cols{display:flex}.sys-col{flex:1;text-align:center;padding:3px 2px;font-size:7px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);border-right:1px solid var(--border);background:var(--surface2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sys-col:last-child{border-right:none}.sys-sub{display:flex}.sys-sub-lbl{text-align:center;padding:2px 2px;font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;border-right:1px solid rgba(255,255,255,.2)}.sys-sub-lbl:last-child{border-right:none}
 .seq-body{position:relative;padding-bottom:40px;min-height:60px}
 .col-line{position:absolute;top:0;bottom:0;border-left:1px dashed rgba(0,0,0,.08);z-index:0;pointer-events:none}
 .sys-bdr{position:absolute;top:0;bottom:0;border-left:2px solid var(--border2);z-index:1;pointer-events:none}
@@ -105,9 +106,9 @@ body{display:flex;flex-direction:column}
   <div class="ut"><button class="utb on" id="ut0" onclick="selU(0)">A<div class="utn" id="un0">–</div></button><button class="utb" id="ut1" onclick="selU(1)">B<div class="utn" id="un1">–</div></button><button class="utb" id="ut2" onclick="selU(2)">C<div class="utn" id="un2">–</div></button></div>
   <div class="nb"><div style="font-size:7px;color:var(--user);text-transform:uppercase;letter-spacing:.06em" id="ulb">User A · Ngăn 31</div><div class="nv" id="un31">0đ</div><div class="ns" id="uns">–</div></div>
   <div class="ab"><div class="al u">Ví MoMo</div><div class="ar"><span class="ak">Số dư</span><span class="av" id="uvi">100.000.000đ</span></div></div>
-  <div class="ig"><label>Nạp tiền</label><div class="ir"><input id="inap" value="500000"/><button class="ib nap" onclick="doNap()">Nạp</button></div></div>
-  <div class="ig"><label>Rút tiền</label><div class="ir"><input id="irut" value="200000"/><button class="ib rut" onclick="doRut()">Rút</button></div><div style="margin-top:2px;display:flex;gap:4px;align-items:center"><button onclick="fillMax()" style="font-size:8px;padding:1px 5px;border:1px solid var(--neg);border-radius:2px;background:rgba(239,68,68,.06);color:var(--neg);cursor:pointer;font-weight:600">Rút hết</button><span style="font-size:8px;color:var(--muted);font-family:var(--mono)">N31:<span id="umx">0đ</span></span></div></div>
-  <button class="ib" style="width:100%;border-color:var(--tvam);color:var(--tvam);background:rgba(180,83,9,.06);padding:3px" onclick="advDay()">Bấm để qua ngày và tính lãi</button>
+  <div class="ig"><label>Nạp tiền</label><div class="ir"><input id="inap" value="500000"/><button class="ib nap" onclick="doNap()">Nạp</button></div><div class="inline-err" id="err-nap"></div></div>
+  <div class="ig"><label>Rút tiền</label><div class="ir"><input id="irut" value="200000"/><button class="ib rut" onclick="doRut()">Rút</button></div><div class="inline-err" id="err-rut"></div><div style="margin-top:2px;display:flex;gap:4px;align-items:center"><button onclick="fillMax()" style="font-size:8px;padding:1px 5px;border:1px solid var(--neg);border-radius:2px;background:rgba(239,68,68,.06);color:var(--neg);cursor:pointer;font-weight:600">Rút hết</button><span style="font-size:8px;color:var(--muted);font-family:var(--mono)">N31:<span id="umx">0đ</span></span></div></div>
+  <button class="ib" style="width:100%;border-color:var(--tvam);color:var(--tvam);background:rgba(180,83,9,.06);padding:3px" onclick="advDay()">Bấm để qua ngày và tính lãi</button><div class="inline-err" id="err-day"></div>
   <div id="advHint" style="display:none;font-size:8px;color:var(--tvam);margin-top:2px;padding:3px 6px;background:rgba(180,83,9,.06);border-radius:2px;font-family:var(--mono)">Bạn cần bấm thêm 1 lần nữa vì tính lãi vào T2</div>
 </div>
 <div class="tpane" id="utp1" style="font-size:9px">
@@ -223,6 +224,8 @@ function gA(id){return parseInt((document.getElementById(id).value||'').replace(
 const _p={};function sV(id,v){const e=document.getElementById(id);if(!e)return;const p=_p[id];e.textContent=v;if(p!==undefined&&p!==v){e.classList.remove('chg');void e.offsetWidth;e.classList.add('chg');}_p[id]=v;}
 function clearHL(){document.querySelectorAll('.chg').forEach(e=>e.classList.remove('chg'));}
 function log(m,t=''){const e=document.getElementById('lb');const c=t==='err'?'var(--neg)':t==='ok'?'var(--pos)':t==='warn'?'var(--warn)':'var(--muted)';e.innerHTML=`<b style="color:${c}">[${t||'info'}]</b> ${m}`;}
+function showInlineErr(id,msg){const el=document.getElementById(id);if(!el)return;el.textContent='⚠ '+msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),4000);}
+function clearInlineErr(id){const el=document.getElementById(id);if(el)el.classList.remove('on');}
 
 // Action Log
 let aLog=[];
@@ -377,8 +380,8 @@ function vTab(n){document.querySelectorAll('#vtp0,#vtp1').forEach((e,i)=>e.class
 
 // Snapshot for rollback
 let snap=null,snapName='';
-function saveSnap(name){snap=JSON.parse(JSON.stringify({users:S.users,thuHo:S.thuHo,pool:S.pool,sN:S.sN,sU:S.sU,sW:S.sW,vUCD:S.vUCD,vUC:S.vUC,vFCD:S.vFCD,vFC:S.vFC,vT:S.vT,vMT:S.vMT,jobs:S.jobs,phase:S.phase,cdList:cL.map(l=>({...l}))}));snapName=name;document.getElementById('brl').disabled=false;document.getElementById('rlbl').textContent='Hoàn tác: '+name;}
-function rollback(){if(!snap){log('Không có snapshot','err');return;}Object.assign(S,{users:snap.users,thuHo:snap.thuHo,pool:snap.pool,sN:snap.sN,sU:snap.sU,sW:snap.sW,vUCD:snap.vUCD,vUC:snap.vUC,vFCD:snap.vFCD,vFC:snap.vFC,vT:snap.vT,vMT:snap.vMT,jobs:snap.jobs,phase:snap.phase});snap.cdList.forEach((l,i)=>{if(cL[i])Object.assign(cL[i],l);});snap=null;document.getElementById('brl').disabled=true;document.getElementById('rlbl').textContent='Hoàn tác job vừa chạy';log('Rollback ✓ → trước "'+snapName+'"','warn');aLogAdd('ROLLBACK',{target:snapName});render();}
+function saveSnap(name){snap=JSON.parse(JSON.stringify({users:S.users,thuHo:S.thuHo,pool:S.pool,sN:S.sN,sU:S.sU,sW:S.sW,poolDebt:S.poolDebt,vUCD:S.vUCD,vUC:S.vUC,vFCD:S.vFCD,vFC:S.vFC,vT:S.vT,vMT:S.vMT,jobs:S.jobs,phase:S.phase,cdList:cL.map(l=>({...l}))}));snapName=name;document.getElementById('brl').disabled=false;document.getElementById('rlbl').textContent='Hoàn tác: '+name;}
+function rollback(){if(!snap){log('Không có snapshot','err');return;}Object.assign(S,{users:snap.users,thuHo:snap.thuHo,pool:snap.pool,sN:snap.sN,sU:snap.sU,sW:snap.sW,poolDebt:snap.poolDebt||0,vUCD:snap.vUCD,vUC:snap.vUC,vFCD:snap.vFCD,vFC:snap.vFC,vT:snap.vT,vMT:snap.vMT,jobs:snap.jobs,phase:snap.phase});snap.cdList.forEach((l,i)=>{if(cL[i])Object.assign(cL[i],l);});snap=null;document.getElementById('brl').disabled=true;document.getElementById('rlbl').textContent='Hoàn tác job vừa chạy';log('Rollback ✓ → trước "'+snapName+'"','warn');aLogAdd('ROLLBACK',{target:snapName});render();}
 
 // LSGD
 function addLsgd(uIdx,type,qty,price,paid,loIdx){lsgd.unshift({b:String(S.bId).padStart(4,'0'),u:uIdx,type,qty,price,paid,lo:loIdx!=null?loIdx:-1});if(lsgd.length>80)lsgd.pop();renderLsgd();}
@@ -452,7 +455,7 @@ function renderPriceTable(){
 
 function resetAll(){
   cL=[mkC(1e10,6,365,1),mkC(1e5,7,365,1e4),mkC(1e5,7,15,500),mkC(1e5,7,5,300),mkC(1e6,7.24,730,123),mkC(1e7,6.54,365,1232)];iCL();
-  S={day:0,bId:1,price:gAP(),phase:'IDLE',users:[mkU(),mkU(),mkU()],thuHo:0,pool:PX,sN:0,sU:0,sW:0,vUCD:[0,0,0],vUC:[0,0,0],vFCD:cL.reduce((s,l)=>s+l.qty,0),vFC:0,vT:0,vMT:0,jobs:{r:0,f:0,m:0,v:0,n:0},pendingLS:null,sesOpen:false};
+  S={day:0,bId:1,price:gAP(),phase:'IDLE',users:[mkU(),mkU(),mkU()],thuHo:0,pool:PX,sN:0,sU:0,sW:0,vUCD:[0,0,0],vUC:[0,0,0],vFCD:cL.reduce((s,l)=>s+l.qty,0),vFC:0,vT:0,vMT:0,jobs:{r:0,f:0,m:0,v:0,n:0},pendingLS:null,sesOpen:false,poolDebt:0};
   aU=0;lsgd=[];loPri=[];cmpLog=[];snap=null;fSt=[];fI=-1;fPl=false;clearInterval(fTm);clearHL();aLog=[];aLogAdd('RESET',{});
   document.getElementById('brl').disabled=true;document.getElementById('rlbl').textContent='Hoàn tác job vừa chạy';
   bldH();clrB();uFB();renderCDLo();renderVCDLo();renderLsgd();renderLaiLog();renderPriceTable();checkSwapAlerts();
@@ -507,7 +510,7 @@ function render(){
   const rDone=!hR||j.r;
   sJ('bjr','sr',hR&&!j.r,j.r);
   sJ('bjm','sm',hN&&!j.m,j.m);
-  sJ('bjf','sf',hA&&rDone&&!j.f,j.f);
+  sJ('bjf','sf',S.poolDebt>0&&S.thuHo>0&&!j.f,j.f);
   sJ('bjc','sc',hA&&rDone&&(!hN||j.m),0);
   renderVCDLo();
 }
@@ -515,8 +518,8 @@ function sJ(b,s,r,d){const be=document.getElementById(b),se=document.getElementB
 function selU(i){aU=i;render();}
 function fillMax(){const u=S.users[aU];if(u.n31>0)document.getElementById('irut').value=String(u.n31);}
 
-function doNap(){const a=gA('inap'),u=S.users[aU];if(a<=0||a>u.vi){log('Nạp thất bại','err');return;}if(u.sN+a>5e7){log('Tối đa 50tr/phiên','err');return;}u.vi-=a;u.sN+=a;u.n31+=a;u.simpleN31+=a;u.simpleCapDiff=true;S.thuHo+=a;S.sN+=a;S.phase='REALTIME';S.sesOpen=true;addLsgd(aU,'deposit',0,0,a);log('User '+UN[aU]+' nạp '+fN(a),'ok');aLogAdd('NẠP',{user:UN[aU],amount:a});addF('nap',aU,a);render();}
-function doRut(){const a=gA('irut'),u=S.users[aU];if(a<=0){log('Không hợp lệ','err');return;}if(a>u.n31){log('Vượt N31','err');return;}if(S.pool<a){log('Pool không đủ','err');return;}S.pool-=a;u.vi+=a;u.sR+=a;S.sU+=a;u.n31-=a;u.simpleN31=Math.max(0,u.simpleN31-a);S.phase='REALTIME';S.sesOpen=true;addLsgd(aU,'withdraw',0,0,a);log('User '+UN[aU]+' rút '+fN(a),'ok');aLogAdd('RÚT',{user:UN[aU],amount:a});addF('rut',aU,a);render();}
+function doNap(){const a=gA('inap'),u=S.users[aU];if(a<=0||a>u.vi){log('Nạp thất bại','err');showInlineErr('err-nap','Số tiền không hợp lệ hoặc vượt số dư Ví');return;}if(u.sN+a>5e7){log('Tối đa 50tr/phiên','err');showInlineErr('err-nap','Tối đa 50,000,000đ/phiên');return;}clearInlineErr('err-nap');u.vi-=a;u.sN+=a;u.n31+=a;u.simpleN31+=a;u.simpleCapDiff=true;S.thuHo+=a;S.sN+=a;S.phase='REALTIME';S.sesOpen=true;addLsgd(aU,'deposit',0,0,a);log('User '+UN[aU]+' nạp '+fN(a),'ok');aLogAdd('NẠP',{user:UN[aU],amount:a});addF('nap',aU,a);render();}
+function doRut(){const a=gA('irut'),u=S.users[aU];if(a<=0){log('Không hợp lệ','err');showInlineErr('err-rut','Số tiền không hợp lệ');return;}if(a>u.n31){log('Vượt N31','err');showInlineErr('err-rut','Vượt số dư Ngăn 31: '+fN(u.n31));return;}if(S.pool<a){log('Pool không đủ','err');showInlineErr('err-rut','Pool không đủ: còn '+fN(S.pool));return;}clearInlineErr('err-rut');S.pool-=a;u.vi+=a;u.sR+=a;S.sU+=a;S.poolDebt=Math.round((S.poolDebt+a)*100)/100;u.n31-=a;u.simpleN31=Math.max(0,u.simpleN31-a);S.phase='REALTIME';S.sesOpen=true;addLsgd(aU,'withdraw',0,0,a);log('User '+UN[aU]+' rút '+fN(a),'ok');aLogAdd('RÚT',{user:UN[aU],amount:a});addF('rut',aU,a);render();}
 
 function jRut(){
   saveSnap('Job Rút');S.phase='JOBS';let tS=0,tC=0,aW=0;const perU=[];
@@ -560,11 +563,11 @@ function jRut(){
 }
 function jRefill(){
   saveSnap('Job Hoàn ứng');S.phase='JOBS';
-  const rf=Math.min(S.sU,S.thuHo);
-  if(rf>0){S.pool=Math.round((S.pool+rf)*100)/100;S.thuHo=Math.round((S.thuHo-rf)*100)/100;}
+  const rf=Math.min(S.poolDebt,S.thuHo);
+  if(rf>0){S.pool=Math.round((S.pool+rf)*100)/100;S.thuHo=Math.round((S.thuHo-rf)*100)/100;S.poolDebt=Math.round((S.poolDebt-rf)*100)/100;}
   S.jobs.f=1;
-  log('Job Hoàn ứng ✓ | Refill Pool '+fN(rf),'ok');
-  aLogAdd('JOB_HOÀN_ỨNG',{refill:rf});
+  log('Job Hoàn ứng ✓ | Refill Pool '+fN(rf)+(S.poolDebt>0?' | Còn nợ '+fN(S.poolDebt):''),'ok');
+  aLogAdd('JOB_HOÀN_ỨNG',{refill:rf,debtRemain:S.poolDebt});
   addF('jobRefill',null,{rf});render();
 }
 function jMoMo(){}
@@ -734,9 +737,9 @@ function closeSes(){S.phase='IDLE';S.sesOpen=false;S.sN=0;S.sU=0;S.sW=0;S.vMT=0;
 }
 function advDay(){
   // Block nếu phiên đang mở
-  if(S.sesOpen){log('⚠ Đóng phiên trước khi qua ngày','err');return;}
+  if(S.sesOpen){log('⚠ Đóng phiên trước khi qua ngày','err');showInlineErr('err-day','Cần đóng phiên trước');return;}
   // Block nếu có lô cần swap nhưng chưa chạy
-  if(S.pendingSwap&&S.pendingSwap.length){log('⚠ Cần chạy Job Swap trước khi qua ngày','err');return;}
+  if(S.pendingSwap&&S.pendingSwap.length){log('⚠ Cần chạy Job Swap trước khi qua ngày','err');showInlineErr('err-day','Cần chạy Job Swap trước');return;}
   // Apply pending LS nếu đến ngày T+2
   if(S.pendingLS&&S.day+1>=S.pendingLS.applyOnDay){
     const oldPct=Math.round(LS*10000)/100;
@@ -775,19 +778,58 @@ function advDay(){
 // FLOW ENGINE (preserved from v4)
 // ══════════════════════════════════════════════
 const SYS=[
-  {id:'momo',label:'MoMo',bg:'bg-m',cols:[{id:'vi',l:'Ví MoMo'},{id:'th',l:'Thu hộ TVAM'},{id:'pl',l:'FS Pool'},{id:'thv',l:'Thu hộ VCB'}]},
-  {id:'tvam',label:'TVAM',bg:'bg-t',cols:[{id:'n31',l:'Ngăn 31'},{id:'usr',l:'User'},{id:'fs',l:'Finsight'}]},
-  {id:'vcb',label:'VCB',bg:'bg-v',cols:[{id:'vmt',l:'MoMo_Tổng'},{id:'vtt',l:'TVAM_Tổng'},{id:'vtu',l:'TVAM_User'},{id:'vtf',l:'TVAM_FS'}]},
+  {id:'momo',label:'MoMo',bg:'bg-m',flex:30,cols:[{id:'vi',l:'Ví MoMo'},{id:'th',l:'Thu hộ TVAM'},{id:'pl',l:'FS Pool'},{id:'thv',l:'Thu hộ VCB'}]},
+  {id:'tvam',label:'TVAM',bg:'bg-t',flex:40,groups:[
+    {l:'Chung',flex:2,cols:[{id:'display_root',l:'Display_root'},{id:'momo_root',l:'MoMo_root'}]},
+    {l:'User',flex:3,cols:[{id:'n31',l:'Display (31)'},{id:'cash36',l:'Cash (36)'},{id:'cd37',l:'CD (37)'}]},
+    {l:'Finsight',flex:1,cols:[{id:'fs',l:'Finsight'}]},
+  ]},
+  {id:'vcb',label:'VCB',bg:'bg-v',flex:30,cols:[{id:'vmt',l:'MoMo_Tổng'},{id:'vtt',l:'TVAM_Tổng'},{id:'vtu',l:'TVAM_User'},{id:'vtf',l:'TVAM_FS'}]},
 ];
-const AC=[];SYS.forEach(s=>s.cols.forEach(c=>AC.push({...c,sys:s.id})));
-const CI={};AC.forEach((c,i)=>CI[c.id]=i);const NC=AC.length;
-function cP(id){return((CI[id]+.5)/NC*100);}
+// Position map theo flex ratio — hỗ trợ groups
+const CI={};
+let _acc=0;
+SYS.forEach(s=>{
+  const allCols=s.groups?s.groups.flatMap(g=>g.cols):s.cols;
+  const totalCols=allCols.length;
+  if(s.groups){
+    let gAcc=_acc;
+    s.groups.forEach(g=>{
+      const gW=s.flex*(g.flex/(s.groups.reduce((a,gg)=>a+gg.flex,0)));
+      const colW=gW/g.cols.length;
+      g.cols.forEach((c,i)=>{CI[c.id]=gAcc+colW*(i+0.5);});
+      gAcc+=gW;
+    });
+  } else {
+    const colW=s.flex/totalCols;
+    allCols.forEach((c,i)=>{CI[c.id]=_acc+colW*(i+0.5);});
+  }
+  _acc+=s.flex;
+});
+function cP(id){return CI[id]||50;}
 function bldH(){
   const sh=document.getElementById('sh');
-  sh.innerHTML=SYS.map(s=>`<div class="sys-band" style="flex:${s.cols.length}"><div class="sys-title ${s.bg}">${s.label}</div><div class="sys-cols">${s.cols.map(c=>`<div class="sys-col">${c.l}</div>`).join('')}</div></div>`).join('');
-  let acc=0;SYS.forEach((s,si)=>{acc+=s.cols.length;if(si<SYS.length-1){const d=document.createElement('div');d.className='sys-bdr';d.style.left=(acc/NC*100)+'%';sh.appendChild(d);}});
+  sh.innerHTML=SYS.map(s=>{
+    if(s.groups){
+      const totalFlex=s.groups.reduce((a,g)=>a+g.flex,0);
+      const subHdr=s.groups.map(g=>`<div class="sys-sub-lbl" style="flex:${g.flex};background:rgba(180,83,9,.55)">${g.l}</div>`).join('');
+      const colRow=s.groups.map(g=>g.cols.map(c=>`<div class="sys-col">${c.l}</div>`).join('')).join('');
+      return `<div class="sys-band" style="flex:${s.flex}"><div class="sys-title ${s.bg}">${s.label}</div><div class="sys-sub">${subHdr}</div><div class="sys-cols">${colRow}</div></div>`;
+    }
+    return `<div class="sys-band" style="flex:${s.flex}"><div class="sys-title ${s.bg}" style="padding:10px 0">${s.label}</div><div class="sys-cols">${s.cols.map(c=>`<div class="sys-col">${c.l}</div>`).join('')}</div></div>`;
+  }).join('');
+  let acc=0;SYS.forEach((s,si)=>{acc+=s.flex;if(si<SYS.length-1){const d=document.createElement('div');d.className='sys-bdr';d.style.left=acc+'%';sh.appendChild(d);}});
 }
-function clrB(){const b=document.getElementById('sb');b.innerHTML='';for(let i=0;i<NC;i++){const d=document.createElement('div');d.className='col-line';d.style.left=((i+.5)/NC*100)+'%';b.appendChild(d);}let acc=0;SYS.forEach((s,si)=>{acc+=s.cols.length;if(si<SYS.length-1){const d=document.createElement('div');d.className='sys-bdr';d.style.left=(acc/NC*100)+'%';b.appendChild(d);}});const bnds=[];let x=0;SYS.forEach(s=>{const w=s.cols.length/NC*100;bnds.push({l:x,w,bg:s.id==='momo'?'rgba(216,45,139,.05)':s.id==='tvam'?'rgba(180,83,9,.04)':'rgba(22,163,74,.04)'});x+=w;});bnds.forEach(b2=>{const d=document.createElement('div');d.style.cssText=`position:absolute;top:0;bottom:0;left:${b2.l}%;width:${b2.w}%;background:${b2.bg};z-index:0;pointer-events:none`;b.appendChild(d);});document.getElementById('si').innerHTML='Nạp/rút để xem';}
+function clrB(){
+  const b=document.getElementById('sb');b.innerHTML='';
+  // Col lines theo vị trí thực từ CI
+  Object.values(CI).forEach(pct=>{const d=document.createElement('div');d.className='col-line';d.style.left=pct+'%';b.appendChild(d);});
+  // Sys borders
+  let acc=0;SYS.forEach((s,si)=>{acc+=s.flex;if(si<SYS.length-1){const d=document.createElement('div');d.className='sys-bdr';d.style.left=acc+'%';b.appendChild(d);}});
+  // Background zones
+  let x=0;SYS.forEach(s=>{const w=s.flex;const d=document.createElement('div');d.style.cssText=`position:absolute;top:0;bottom:0;left:${x}%;width:${w}%;background:${s.id==='momo'?'rgba(216,45,139,.05)':s.id==='tvam'?'rgba(180,83,9,.04)':'rgba(22,163,74,.04)'};z-index:0;pointer-events:none`;b.appendChild(d);x+=w;});
+  document.getElementById('si').innerHTML='Nạp/rút để xem';
+}
 
 const RH=38;let fSt=[],fI=-1,fPl=false,fTm=null;
 
@@ -795,17 +837,17 @@ function addF(action,uI,data){
   const uN=uI!=null?UN[uI]:'';const uc=uI!=null?UCOL[uI]:null;const steps=[];
   if(action==='nap'){
     steps.push({from:'vi',to:'th',label:'User '+uN+' nạp',amt:fN(data),color:uc,usr:uI});
-    steps.push({from:'th',to:'n31',label:'→ N31 ('+uN+')',amt:'+'+fN(data),color:uc,usr:uI});
+    steps.push({from:'display_root',to:'n31',label:'→ N31 ('+uN+')',amt:'+'+fN(data),color:uc,usr:uI});
   }else if(action==='rut'){
-    steps.push({from:'n31',to:'n31',label:'N31 ('+uN+') trừ',amt:'-'+fN(data),color:uc,self:true,usr:uI});
+    steps.push({from:'n31',to:'display_root',label:'N31 ('+uN+') → Display_root',amt:'-'+fN(data),color:uc,usr:uI});
     steps.push({from:'pl',to:'vi',label:'Pool ứng → Ví '+uN,amt:fN(data),color:uc,usr:uI});
   }else if(action==='jobRut'){
     const{tS,tC,aW,perU}=data;
     // 1. TVAM_SellCD — user bán CD ở TVAM trước
     steps.push({phase:'Job Rút — TVAM_SellCD · VCB_SellCD'});
     perU.forEach((pu,idx)=>{if(!pu||pu.sell<=0)return;const c=UCOL[idx],n=UN[idx];
-      steps.push({from:'usr',to:'fs',label:n+' sell_CD',amt:fCD(pu.sell)+' CD',color:c,usr:idx});
-      steps.push({from:'fs',to:'usr',label:n+' tiền bán',amt:fN(pu.cash),color:c,usr:idx});
+      steps.push({from:'cd37',to:'fs',label:n+' CD(37)→Finsight',amt:fCD(pu.sell)+' CD',color:c,usr:idx});
+      steps.push({from:'fs',to:'cash36',label:n+' tiền bán→Cash(36)',amt:fN(pu.cash),color:c,usr:idx});
     });
     // 2. VCB_SellCD — lưu ký sau khi TVAM xác nhận
     
@@ -813,14 +855,14 @@ function addF(action,uI,data){
       steps.push({from:'vtu',to:'vtf',label:n+' sell_CD',amt:fCD(pu.sell)+' CD',color:c,usr:idx});
       steps.push({from:'vtf',to:'vtu',label:n+' tiền bán',amt:fN(pu.cash),color:c,usr:idx});
     });
-    // 3. TVAM_Withdraw — trả tiền về user
+    // 3. TVAM_Withdraw — Cash(36) → MoMo_root, rồi request VCB
     steps.push({phase:'Job Rút — TVAM_Withdraw · VCB_Withdraw'});
     perU.forEach((pu,idx)=>{if(!pu||pu.wd<=0)return;const c=UCOL[idx],n=UN[idx];const ex=pu.cashExtra||0;const tot=pu.wd+ex;
-      steps.push({from:'usr',to:'usr',label:n+' withdraw'+(ex>0?' (+'+fN(ex)+' cash dư)':''),amt:'-'+fN(tot),color:c,self:true,usr:idx});
+      steps.push({from:'cash36',to:'momo_root',label:n+' Cash(36)→MoMo_root',amt:fN(tot),color:c,usr:idx});
     });
     // 4. TVAM request VCB_Withdraw
     if(aW>0){
-      steps.push({from:'usr',to:'vtt',label:'TVAM request VCB_Withdraw',amt:fN(aW),color:'var(--tvam)',dashed:true});
+      steps.push({from:'momo_root',to:'vtt',label:'TVAM request VCB_Withdraw',amt:fN(aW),color:'var(--tvam)',dashed:true});
       
       steps.push({from:'vtu',to:'vtt',label:'→ TVAM_Tổng',amt:fN(aW),color:'var(--vcb)'});
       steps.push({from:'vtt',to:'vmt',label:'→ MoMo_Tổng',amt:fN(aW),color:'var(--momo)'});
@@ -848,7 +890,7 @@ function addF(action,uI,data){
     // Phase 2: TVAM ghi nhận hết tất cả user → VCB lưu ký batch
     if(aD>0)steps.push({phase:'Job Nạp — VCB_DepositTổng · VCB_DepositUser'});
     perU.forEach((pu,idx)=>{if(!pu||pu.dep<=0)return;const c=UCOL[idx],n=UN[idx];
-      steps.push({from:'n31',to:'usr',label:n+' TVAM ghi nhận',amt:fN(pu.dep),color:c,usr:idx});
+      steps.push({from:'momo_root',to:'cash36',label:n+' netoff → Cash 36',amt:fN(pu.dep),color:c,usr:idx});
     });
     perU.forEach((pu,idx)=>{if(!pu||pu.dep<=0)return;const c=UCOL[idx],n=UN[idx];
       steps.push({from:'vtt',to:'vtu',label:n+' VCB lưu ký',amt:fN(pu.dep),color:c,usr:idx});
@@ -856,8 +898,8 @@ function addF(action,uI,data){
     // Phase 3: TVAM buy_CD hết tất cả user → VCB lưu ký batch
     if(tB>0)steps.push({phase:'Job Nạp — TVAM_BuyCD · VCB_BuyCD'});
     perU.forEach((pu,idx)=>{if(!pu||!pu.buy)return;const c=UCOL[idx],n=UN[idx];
-      steps.push({from:'usr',to:'fs',label:n+' buy_CD',amt:fN(pu.paid),color:c,usr:idx});
-      steps.push({from:'fs',to:'usr',label:n+' nhận CD',amt:fCD(pu.buy)+' CD',color:c,usr:idx});
+      steps.push({from:'cash36',to:'fs',label:n+' Cash(36)→Finsight',amt:fN(pu.paid),color:c,usr:idx});
+      steps.push({from:'fs',to:'cd37',label:n+' CD→CD(37)',amt:fCD(pu.buy)+' CD',color:c,usr:idx});
     });
     perU.forEach((pu,idx)=>{if(!pu||!pu.buy)return;const c=UCOL[idx],n=UN[idx];
       steps.push({from:'vtu',to:'vtf',label:n+' VCB lưu ký',amt:fN(pu.paid),color:c,usr:idx});
